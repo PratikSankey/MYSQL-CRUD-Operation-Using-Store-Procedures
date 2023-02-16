@@ -1,0 +1,84 @@
+// CRUD Using Store Procedure
+
+
+                                    -----------Basic query-----------
+use studentinformation;
+
+ CREATE TABLE Student3( Id int ,
+ Student_Name varchar(45),
+ Birthdate date,
+ Passout bool,
+ Age int,
+ Score int,
+ Address varchar(45),
+ PRIMARY KEY (Id)
+                       ); 
+ SELECT * from Student3; 
+ INSERT into Student3 (Id,Student_Name, Birthdate,Passout,Age,Score,Address)
+ VALUES(1,'Pratik','2001-04-08',false,20,80,'Nashik');
+ 
+ INSERT into Student3 (Id,Student_Name, Birthdate,Passout,Age,Score,Address)
+ VALUES(2,'Pankaj','2000-05-08',true,20,80,'Pune');
+ 
+ INSERT into Student3 (Id,Student_Name, Birthdate,Passout,Age,Score,Address)
+ VALUES(3,'Saurabh','2000-05-09',true,23,90,'Pune');
+ 
+ INSERT into Student3 (Id,Student_Name, Birthdate,Passout,Age,Score,Address)
+ VALUES(4,'Sanjay','2005-05-07',false,23,99,'Chennai');
+ 
+  INSERT into Student3 (Id,Student_Name, Birthdate,Passout,Age,Score,Address)
+ VALUES(5,'Shahrukh','2005-05-07',false,23,79,'Mumbai');
+ 
+ call get_student_info;
+ call insert_student_info(6,'sham','2003-09-06',true,21,56,'Aasam');
+ call delete_student_record(6);
+ call update_student_record(2,'Paras','2006-04-12',true,34,89,'Goa');
+            
+                                -----------Store Procedure For Reading Table Data-----------
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_student_info`()
+BEGIN
+SELECT * from Student3;
+END
+                                -----------Store Procedure For Deleting Table record-----------
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_student_record`(IN S_ID int)
+BEGIN
+DELETE FROM Student3 WHERE Id=S_ID;
+END
+                              -----------Store Procedure For Inserting Record-----------
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insert_student_info`(IN S_ID int , IN S_NAME varchar(45), IN S_BIRTHDATE date, IN S_PASSOUT bool ,IN S_AGE int, IN S_SCORE int,
+IN S_ADDRESS varchar(45))
+BEGIN
+INSERT into Student3 (Id,Student_Name, Birthdate,Passout,Age,Score,Address)
+values ( S_ID  , S_NAME,S_BIRTHDATE, S_PASSOUT ,S_AGE , S_SCORE, S_ADDRESS );
+END
+                             -----------Store Procedure For Updating Table record-----------
+CREATE DEFINER=`root`@`localhost` PROCEDURE `update_student_record`(IN S_ID int , IN S_NAME varchar(45), IN S_BIRTHDATE date, IN S_PASSOUT bool ,
+IN S_AGE int, IN S_SCORE int,IN S_ADDRESS varchar(45))
+BEGIN
+ if S_NAME='' then
+ set S_ID= (SELECT Student_Name from Student3 where Student_Name=S_NAME );
+ end if;
+ 
+ if S_PASSOUT='' then
+ set S_ID= (SELECT Passout from Student3 where Passout=S_PASSOUT );
+ end if;
+if S_AGE='' then
+ set S_ID= (SELECT Age from Student3 where Age=S_AGE );
+ end if;
+  if S_SCORE='' then
+ set S_ID= (SELECT Score from Student3 where Score=S_SCORE);
+ end if;
+ if S_ADDRESS='' then
+ set S_ID= (SELECT Address from Student3 where Address=S_ADDRESS);
+ end if;
+ 
+  UPDATE Student3
+  set
+  Student_Name=S_NAME,
+  Birthdate=S_BIRTHDATE,
+  Passout=S_PASSOUT,
+  Age=S_AGE , 
+  Score=S_SCORE , 
+  Address=S_ADDRESS
+  WHERE Id=S_Id;
+END
